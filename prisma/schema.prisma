@@ -24,7 +24,7 @@ model ClothingItem {
   secondaryColor  String?
   style           String
   imageUrl        String
-  season          Season
+  season          Season?
   createdAt       DateTime @default(now())
 }
 

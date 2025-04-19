@@ -9,10 +9,13 @@ const {
 
 const authMiddleware = require("../middleware/authMiddleware");
 
-router.use(authMiddleware); // toutes les routes sont protégées
+// 🔥 Ici, on protège uniquement les routes sensibles
 
-router.get("/", getClothingItems);
+// GET et DELETE sont protégés
+router.get("/", authMiddleware, getClothingItems);
+router.delete("/:id", authMiddleware, deleteClothingItem);
+
+// POST (création vêtement) reste libre TEMPORAIREMENT
 router.post("/", addClothingItem);
-router.delete("/:id", deleteClothingItem);
 
 module.exports = router;
