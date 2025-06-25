@@ -5,6 +5,7 @@ const {
   getClothingItems,
   addClothingItem,
   deleteClothingItem,
+  updateClothingItem,
 } = require("../controllers/clothingController");
 
 const authMiddleware = require("../middleware/authMiddleware");
@@ -14,6 +15,8 @@ const authMiddleware = require("../middleware/authMiddleware");
 // GET et DELETE sont protégés
 router.get("/", authMiddleware, getClothingItems);
 router.delete("/:id", authMiddleware, deleteClothingItem);
+router.put('/:id', authMiddleware, updateClothingItem);
+
 
 // POST (création vêtement) reste libre TEMPORAIREMENT
 router.post("/", addClothingItem);
