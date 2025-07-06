@@ -15,6 +15,20 @@ enum Season {
   autumn
 }
 
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  password       String
+  createdAt      DateTime @default(now())
+
+  // Champs pour freemium & IA
+  aiTokens       Int      @default(1) // 1 token au départ
+  lastTokenReset DateTime @default(now()) // quand on a donné le dernier token gratuit
+  isPremium      Boolean  @default(false)
+  subscriptionEnd DateTime? // null si free
+}
+
+
 model ClothingItem {
   id              String   @id @default(uuid())
   userId          String
