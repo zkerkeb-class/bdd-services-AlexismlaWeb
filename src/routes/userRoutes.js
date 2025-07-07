@@ -5,7 +5,10 @@ const {
   getUserById,
   deleteUserById,
   consumeToken,
-  resetTokens,  
+  resetTokens,
+  getUserByResetToken,
+  updateResetTokens,
+  updateUserById
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -16,6 +19,8 @@ router.get("/:id", getUserById);
 router.delete("/:id", deleteUserById);
 router.put("/:id/consume-token", consumeToken);
 router.put("/:id/reset-tokens", resetTokens);
-
+router.get("/by-reset-token/:token", getUserByResetToken);
+router.put("/:id/reset-tokens", updateResetTokens);
+router.put("/:id", updateUserById);
 
 module.exports = router;

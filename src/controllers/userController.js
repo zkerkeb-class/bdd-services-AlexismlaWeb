@@ -1,23 +1,22 @@
 const prisma = require("../prisma/client");
 
 const createUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, emailVerifyToken } = req.body;
+  console.log(req.body)
   try {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return res.status(400).json({ error: "Utilisateur existe déjà." });
-    }
-
     const user = await prisma.user.create({
-      data: { email, password },
+      data: {
+        email,
+        password,
+        emailVerifyToken,
+      },
     });
-
-    res.status(201).json({ id: user.id, email: user.email });
+    res.status(201).json(user);
   } catch (error) {
-    console.error("Erreur createUser:", error);
     res.status(500).json({ error: "Erreur serveur" });
   }
 };
+
 
 const getUserByEmail = async (req, res) => {
   const { email } = req.params;
@@ -45,7 +44,35 @@ const getUserById = async (req, res) => {
   }
 };
 
+const getUserByResetToken = async (req, res) => {
+  const { token } = req.params;
+  try {
+    const user = await prisma.user.findFirst({ where: { resetToken: token } });
+    if (!user) return res.status(404).json({ error: "Token invalide." });
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
 
+const updateResetTokens = async (req, res) => {
+  const { id } = req.params;
+  const { resetToken, resetTokenExpires, password } = req.body;
+  try {
+    const dataToUpdate = {};
+    if (resetToken !== undefined) dataToUpdate.resetToken = resetToken;
+    if (resetTokenExpires !== undefined) dataToUpdate.resetTokenExpires = resetTokenExpires;
+    if (password !== undefined) dataToUpdate.password = password;
+
+    const updated = await prisma.user.update({
+      where: { id },
+      data: dataToUpdate,
+    });
+    res.status(200).json(updated);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
 
 const deleteUserById = async (req, res) => {
   const { id } = req.params;
@@ -102,6 +129,22 @@ const resetTokens = async (req, res) => {
   }
 };
 
+const updateUserById = async (req, res) => {
+  const { id } = req.params;
+  // On récupère dynamiquement tous les champs du body, donc ça marche même si tu veux updater autre chose plus tard
+  const fields = req.body;
+  try {
+    const updated = await prisma.user.update({
+      where: { id },
+      data: fields,
+    });
+    res.status(200).json(updated);
+  } catch (err) {
+    console.error("Erreur updateUserById:", err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
 module.exports = {
   createUser,
   getUserByEmail,
@@ -109,4 +152,7 @@ module.exports = {
   deleteUserById,
   consumeToken,
   resetTokens,
+  getUserByResetToken,
+  updateResetTokens,
+  updateUserById
 };
