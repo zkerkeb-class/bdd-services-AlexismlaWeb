@@ -8,7 +8,8 @@ const {
   resetTokens,
   getUserByResetToken,
   updateResetTokens,
-  updateUserById
+  updateUserById,
+  updateResetPassword
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.put("/:id/reset-tokens", resetTokens);
 router.get("/by-reset-token/:token", getUserByResetToken);
 router.put("/:id/reset-tokens", updateResetTokens);
 router.put("/:id", updateUserById);
+router.put("/:id/reset-password", updateResetPassword);
 
 module.exports = router;

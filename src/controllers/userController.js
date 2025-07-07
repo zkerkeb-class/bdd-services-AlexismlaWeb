@@ -129,6 +129,25 @@ const resetTokens = async (req, res) => {
   }
 };
 
+const updateResetPassword = async (req, res) => {
+  const { id } = req.params;
+  const { resetToken, resetTokenExpires, password } = req.body;
+  const dataToUpdate = {};
+  if (resetToken !== undefined) dataToUpdate.resetToken = resetToken;
+  if (resetTokenExpires !== undefined) dataToUpdate.resetTokenExpires = resetTokenExpires;
+  if (password !== undefined) dataToUpdate.password = password;
+
+  try {
+    const updated = await prisma.user.update({
+      where: { id },
+      data: dataToUpdate,
+    });
+    res.status(200).json(updated);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
 const updateUserById = async (req, res) => {
   const { id } = req.params;
   // On récupère dynamiquement tous les champs du body, donc ça marche même si tu veux updater autre chose plus tard
@@ -154,5 +173,6 @@ module.exports = {
   resetTokens,
   getUserByResetToken,
   updateResetTokens,
-  updateUserById
+  updateUserById,
+  updateResetPassword
 };
