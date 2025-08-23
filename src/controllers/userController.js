@@ -1,7 +1,20 @@
 const prisma = require("../prisma/client");
 
 const createUser = async (req, res) => {
-  const { email, password, emailVerifyToken } = req.body;
+  const {
+    email,
+    password,
+    emailVerifyToken,
+    genre,
+    age,
+    taille,
+    poids,
+    morphologie,
+    stylesPreferes = [],
+    couleursMotifs = [],
+    restrictions,
+    ville
+  } = req.body;
   console.log(req.body)
   try {
     const user = await prisma.user.create({
@@ -9,6 +22,15 @@ const createUser = async (req, res) => {
         email,
         password,
         emailVerifyToken,
+        genre,
+        age,
+        taille,
+        poids,
+        morphologie,
+        stylesPreferes,
+        couleursMotifs,
+        restrictions,
+        ville
       },
     });
     res.status(201).json(user);
@@ -150,7 +172,7 @@ const updateResetPassword = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   const { id } = req.params;
-  // On récupère dynamiquement tous les champs du body, donc ça marche même si tu veux updater autre chose plus tard
+  // Tous les champs du modèle User enrichi peuvent être mis à jour dynamiquement via le body
   const fields = req.body;
   try {
     const updated = await prisma.user.update({
