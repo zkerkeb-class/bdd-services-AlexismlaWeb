@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Season {
+  all
+  summer
+  winter
+  spring
+  autumn
+}
+
+model User {
+  id                 String   @id @default(uuid())
+  email              String   @unique
+  password           String
+  createdAt          DateTime @default(now())
+
+  // Champs pour freemium & IA
+  aiTokens           Int      @default(1) // 1 token au départ
+  lastTokenReset     DateTime @default(now()) // quand on a donné le dernier token gratuit
+  isPremium          Boolean  @default(false)
+  subscriptionEnd    DateTime? // null si free
+
+  // Champs pour email & sécurité
+  isEmailVerified    Boolean  @default(false)
+  emailVerifyToken   String?      // Pour confirmation email
+  resetToken         String?      // Pour reset mdp
+  resetTokenExpires  DateTime?    // Expiration du token de reset
+
+  // --- Champs enrichis pour IA et personnalisation ---
+  genre              String?
+  age                Int?
+  taille             Float?
+  poids              Float?
+  morphologie        String?
+  stylesPreferes     String[]
+  couleursMotifs     String[]
+  restrictions       String?
+  ville              String?
+
+  // Historique des outfits validés/refusés
+  outfitsValides     Outfit[] @relation("OutfitsValides")
+  outfitsRefuses     Outfit[] @relation("OutfitsRefuses")
+}
+
+
+
+model ClothingItem {
+  id              String   @id @default(uuid())
+  userId          String
+  type            String
+  brand           String?
+  color           String
+  secondaryColor  String?
+  style           String
+  imageUrl        String
+  season          Season?
+  createdAt       DateTime @default(now())
+}
+
+model Preference {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  favoriteColors  String[]
+  avoidColors     String[]
+  favoriteStyles  String[]
+  avoidTypes      String[]
+  createdAt       DateTime @default(now())
+}
+
+model Outfit {
+  id          String   @id @default(uuid())
+  userId      String
+  clothingIds String[]
+  name        String?
+  createdAt   DateTime @default(now())
+
+  // Pour l'historique de validation/refus
+  usersValides User[] @relation("OutfitsValides")
+  usersRefuses User[] @relation("OutfitsRefuses")
+
+  // Catégories des vêtements (utile pour l'IA)
+  categories  String[]
+}
+
