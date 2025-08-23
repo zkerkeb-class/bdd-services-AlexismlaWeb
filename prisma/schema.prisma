@@ -32,6 +32,21 @@ model User {
   emailVerifyToken   String?      // Pour confirmation email
   resetToken         String?      // Pour reset mdp
   resetTokenExpires  DateTime?    // Expiration du token de reset
+
+  // --- Champs enrichis pour IA et personnalisation ---
+  genre              String?
+  age                Int?
+  taille             Float?
+  poids              Float?
+  morphologie        String?
+  stylesPreferes     String[]
+  couleursMotifs     String[]
+  restrictions       String?
+  ville              String?
+
+  // Historique des outfits validés/refusés
+  outfitsValides     Outfit[] @relation("OutfitsValides")
+  outfitsRefuses     Outfit[] @relation("OutfitsRefuses")
 }
 
 
@@ -65,5 +80,12 @@ model Outfit {
   clothingIds String[]
   name        String?
   createdAt   DateTime @default(now())
+
+  // Pour l'historique de validation/refus
+  usersValides User[] @relation("OutfitsValides")
+  usersRefuses User[] @relation("OutfitsRefuses")
+
+  // Catégories des vêtements (utile pour l'IA)
+  categories  String[]
 }
 
