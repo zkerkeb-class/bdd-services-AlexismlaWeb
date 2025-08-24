@@ -56,6 +56,7 @@ model ClothingItem {
   userId          String
   type            String
   brand           String?
+  suggestedBrands String[]  // Marques suggérées par l'IA (tableau)
   color           String
   secondaryColor  String?
   style           String

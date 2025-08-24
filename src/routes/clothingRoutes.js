@@ -3,6 +3,7 @@ const router = express.Router();
 
 const {
   getClothingItems,
+  getClothingItem,
   addClothingItem,
   deleteClothingItem,
   updateClothingItem,
@@ -14,6 +15,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 // GET et DELETE sont protégés
 router.get("/", authMiddleware, getClothingItems);
+router.get("/:id", authMiddleware, getClothingItem);
 router.delete("/:id", authMiddleware, deleteClothingItem);
 router.put('/:id', authMiddleware, updateClothingItem);
 
