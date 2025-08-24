@@ -9,6 +9,19 @@ const getClothingItems = async (req, res) => {
 
     const items = await prisma.clothingItem.findMany({
       where: { userId },
+      select: {
+        id: true,
+        userId: true,
+        type: true,
+        brand: true,
+        suggestedBrands: true,
+        color: true,
+        secondaryColor: true,
+        style: true,
+        imageUrl: true,
+        season: true,
+        createdAt: true,
+      },
     });
 
     res.status(200).json(items);
@@ -18,11 +31,44 @@ const getClothingItems = async (req, res) => {
   }
 };
 
+const getClothingItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const item = await prisma.clothingItem.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        userId: true,
+        type: true,
+        brand: true,
+        suggestedBrands: true,
+        color: true,
+        secondaryColor: true,
+        style: true,
+        imageUrl: true,
+        season: true,
+        createdAt: true,
+      },
+    });
+
+    if (!item) {
+      return res.status(404).json({ error: "Vêtement non trouvé" });
+    }
+
+    res.status(200).json(item);
+  } catch (error) {
+    console.error("Erreur getClothingItem:", error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+};
+
 const addClothingItem = async (req, res) => {
   const {
     userId,  // <- on récupère depuis le body
     type,
     brand,
+    suggestedBrands,
     color,
     secondaryColor,
     style,
@@ -30,12 +76,21 @@ const addClothingItem = async (req, res) => {
     season,
   } = req.body;
 
+  // Convertir suggestedBrands en tableau si c'est une chaîne
+  let suggestedBrandsArray = suggestedBrands;
+  if (typeof suggestedBrands === 'string') {
+    suggestedBrandsArray = suggestedBrands.split(',').map(brand => brand.trim());
+  } else if (!Array.isArray(suggestedBrands)) {
+    suggestedBrandsArray = [];
+  }
+
   try {
     const newItem = await prisma.clothingItem.create({
       data: {
         userId: userId,  // <- on utilise celui du body
         type,
         brand,
+        suggestedBrands: suggestedBrandsArray,
         color,
         secondaryColor,
         style,
@@ -83,6 +138,7 @@ const updateClothingItem = async (req, res) => {
 
 module.exports = {
   getClothingItems,
+  getClothingItem,
   addClothingItem,
   deleteClothingItem,
   updateClothingItem,
